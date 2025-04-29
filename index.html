@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robô Coletor de Recursos com Q-Learning</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Robô Coletor de Recursos com Q-Learning</h1>
+        <div class="controls">
+            <button onclick="startTraining()">Iniciar Treinamento</button>
+            <button onclick="pauseTraining()">Pausar Treinamento</button>
+            <button onclick="showMetrics()">Exibir Métricas</button>
+        </div>
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <canvas id="rewardCanvas" width="400" height="200"></canvas>
+        </div>
+        <div id="metrics" class="metrics">
+            <p>Episódio Atual: <span id="episode">0</span></p>
+            <p>Recompensa Total: <span id="totalReward">0</span></p>
+            <p>Taxa de Exploração (ε): <span id="epsilon">1.0</span></p>
+        </div>
+    </div>
+    <script src="environment.js"></script>
+    <script src="qlearning.js"></script>
+    <script src="renderer.js"></script>
+    <script>
+        // Inicializa o ambiente, Q-Learning e renderizador
+        const env = new Environment();
+        const qLearning = new QLearning(env);
+        const renderer = new Renderer(env, qLearning);
+
+        let training = false;
+
+        function startTraining() {
+            if (!training) {
+                training = true;
+                renderer.renderLoop();
+            }
+        }
+
+        function pauseTraining() {
+            training = false;
+        }
+
+        function showMetrics() {
+            alert(`Episódio: ${qLearning.episode}\nRecompensa Total: ${qLearning.totalReward}\nTaxa de Exploração: ${qLearning.epsilon.toFixed(2)}`);
+        }
+    </script>
+</body>
+</html>
