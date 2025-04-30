@@ -8,47 +8,93 @@
 </head>
 <body>
     <div class="container">
-        <h1>Robô Coletor de Recursos com Q-Learning</h1>
+        <h1>🤖 Robô Coletor de Recursos com Q-Learning 🚀</h1>
+        <p>Este projeto usa Q-Learning para ensinar um robô a coletar moedas em um grid 10x10, evitando paredes. Clique nos botões abaixo para controlar o treinamento!</p>
         <div class="controls">
-            <button onclick="startTraining()">Iniciar Treinamento</button>
-            <button onclick="pauseTraining()">Pausar Treinamento</button>
-            <button onclick="showMetrics()">Exibir Métricas</button>
+            <button id="startTraining">Iniciar Treinamento ▶️</button>
+            <button id="pauseTraining">Pausar Treinamento ⏸️</button>
+            <button id="showMetrics">Exibir Métricas 📊</button>
         </div>
-        <div class="canvas-container">
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
-            <canvas id="rewardCanvas" width="400" height="200"></canvas>
+        <div class="grid" id="gameGrid"></div>
+        <div class="rewards">
+            <h2>📈 Recompensas por Episódio</h2>
+            <table id="rewardTable">
+                <thead>
+                    <tr>
+                        <th>Episódio</th>
+                        <th>Recompensa</th>
+                    </tr>
+                </thead>
+                <tbody id="rewardTableBody"></tbody>
+            </table>
         </div>
-        <div id="metrics" class="metrics">
+        <div class="metrics">
+            <h3>📋 Métricas do Treinamento</h3>
             <p>Episódio Atual: <span id="episode">0</span></p>
             <p>Recompensa Total: <span id="totalReward">0</span></p>
             <p>Taxa de Exploração (ε): <span id="epsilon">1.0</span></p>
         </div>
+        <div class="debug">
+            <h3>🛠️ Depuração</h3>
+            <p>Abra o console (F12) para ver logs detalhados do treinamento.</p>
+        </div>
     </div>
+    <script src="utils.js"></script>
     <script src="environment.js"></script>
     <script src="qlearning.js"></script>
     <script src="renderer.js"></script>
     <script>
-        // Inicializa o ambiente, Q-Learning e renderizador
-        const env = new Environment();
-        const qLearning = new QLearning(env);
-        const renderer = new Renderer(env, qLearning);
+        // Aguarda o carregamento completo do DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            logDebug('✅ DOM carregado, iniciando configuração do projeto...');
 
-        let training = false;
+            // Inicializa as classes principais
+            const env = new Environment();
+            const qLearning = new QLearning(env);
+            const renderer = new Renderer(env, qLearning);
 
-        function startTraining() {
-            if (!training) {
-                training = true;
-                renderer.renderLoop();
-            }
-        }
+            // Estado do treinamento
+            let training = false;
 
-        function pauseTraining() {
-            training = false;
-        }
+            // Botão Iniciar Treinamento
+            const startButton = document.getElementById('startTraining');
+            startButton.addEventListener('click', () => {
+                logDebug('🚀 Botão Iniciar Treinamento clicado');
+                if (!training) {
+                    logDebug('🔄 Definindo training como true e iniciando renderLoop');
+                    training = true;
+                    renderer.renderLoop();
+                } else {
+                    logDebug('⚠️ Treinamento já está em andamento');
+                }
+            });
 
-        function showMetrics() {
-            alert(`Episódio: ${qLearning.episode}\nRecompensa Total: ${qLearning.totalReward}\nTaxa de Exploração: ${qLearning.epsilon.toFixed(2)}`);
-        }
+            // Botão Pausar Treinamento
+            const pauseButton = document.getElementById('pauseTraining');
+            pauseButton.addEventListener('click', () => {
+                logDebug('⏸️ Botão Pausar Treinamento clicado');
+                training = false;
+                logDebug('🛑 Treinamento pausado');
+            });
+
+            // Botão Exibir Métricas
+            const metricsButton = document.getElementById('showMetrics');
+            metricsButton.addEventListener('click', () => {
+                logDebug('📊 Botão Exibir Métricas clicado');
+                const metrics = `Episódio: ${qLearning.episode}\nRecompensa Total: ${qLearning.totalReward.toFixed(2)}\nTaxa de Exploração: ${qLearning.epsilon.toFixed(2)}`;
+                alert(metrics);
+                logDebug('📈 Métricas exibidas: ' + metrics);
+            });
+
+            // Expor a variável training para o renderer
+            window.getTrainingStatus = () => {
+                logDebug('🔍 Verificando status do treinamento: ' + training);
+                return training;
+            };
+
+            // Inicializa a grade
+            renderer.initializeGrid();
+        });
     </script>
 </body>
 </html>
